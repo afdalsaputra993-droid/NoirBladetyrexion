@@ -1,0 +1,199 @@
+---
+// Services.astro — Section "Layanan & Harga" Noir & Blade
+// Data di array frontmatter, render via .map(). Animasi GSAP fade-in sekali.
+// Akses accent-cta via var(--bs-accent-cta) supaya aman dari isu -rgb var.
+
+import {WA_NUMBER, WA_MESSAGE, waHref} from "@/utils/whatsApp.js";
+
+const services = [
+  { name: 'Signature Haircut', icon: 'bi-scissors', description: 'Potongan presisi sesuai bentuk wajah, lengkap dengan cuci rambut dan styling.', duration: '45 menit', price: '85000', featured: false },
+  { name: 'Beard Trim & Shape', icon: 'bi-brush', description: 'Rapikan dan bentuk jenggot dengan garis yang bersih dan tegas.', duration: '30 menit', price: '60000', featured: false },
+  { name: 'Hot Towel Shave', icon: 'bi-droplet-half', description: 'Cukur klasik dengan handuk hangat dan pisau cukur untuk hasil halus.', duration: '30 menit', price: '75000', featured: false },
+  { name: 'Hair Coloring', icon: 'bi-palette', description: 'Pewarnaan rambut dengan warna natural atau berani, dikonsultasikan dulu.', duration: '90 menit', price: '180000', featured: false },
+  { name: 'Kids Cut', icon: 'bi-emoji-smile', description: 'Potongan rapi dan nyaman untuk anak di bawah 12 tahun.', duration: '30 menit', price: '55000', featured: false },
+  { name: 'Paket Groom', icon: 'bi-award', description: 'Haircut, beard trim, hot towel shave, plus pijat kepala.', duration: '90 menit', price: '175000', featured: true },
+];
+
+// Delay stagger per baris (3 kartu/baris di desktop): 0, 0.1, 0.2, ulang
+const cardDelays = services.map((_, i) => ((i % 3) * 0.1).toFixed(1));
+---
+
+<section id="layanan" class="bg-secondary py-5">
+  <div class="container">
+
+    <!-- Kepala section -->
+    <div class="text-center mb-5">
+      <p class="services-label reveal text-accent-cta mb-2">Layanan &amp; Harga</p>
+      <h2 class="reveal text-light fw-bold display-6 mb-3">Perawatan untuk Setiap Gaya</h2>
+      <p class="reveal text-light opacity-75 mx-auto services-sub mb-0">
+        Pilih layanan sesuai kebutuhanmu. Semua dikerjakan barber berpengalaman dengan alat steril dan produk premium.
+      </p>
+    </div>
+
+    <!-- Grid kartu -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      {services.map((service, i) => (
+        <div class:list={['col', service.featured && 'order-first order-md-last']}>
+          <article
+            class:list={[
+              'card h-100 bg-primary rounded-1 p-4 reveal service-card',
+              service.featured && 'service-card--featured',
+            ]}
+            data-delay={cardDelays[i]}
+          >
+            {service.featured && (
+              <span class="service-badge position-absolute top-0 start-50 translate-middle text-primary text-uppercase fw-bold small rounded-1 px-3 py-1">
+                Terlaris
+              </span>
+            )}
+
+            <!-- Ikon dalam lingkaran -->
+            <div class="service-icon rounded-circle border border-2 d-inline-flex align-items-center justify-content-center mb-3">
+              <i class:list={['bi', service.icon, 'fs-4']} aria-hidden="true"></i>
+            </div>
+
+            <h3 class="h5 text-light fw-bold mb-2">{service.name}</h3>
+            <p class="text-light opacity-75 small mb-0">{service.description}</p>
+
+            <!-- Blok bawah (menempel di dasar kartu) -->
+            <div class="mt-auto">
+              <hr class="services-divider my-3" />
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-light d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-clock" aria-hidden="true"></i>
+                  {service.duration}
+                </small>
+                <span data-target={service.price} data-prefix="Rp " class="counter service-price fw-bold">0</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      ))}
+    </div>
+
+    <!-- Footer section -->
+    <div class="text-center mt-5">
+      <p class="reveal text-light opacity-75 small mx-auto services-sub mb-4">
+        Harga belum termasuk produk styling tambahan. Konsultasi gaya gratis di setiap kunjungan.
+      </p>
+      <a
+        href={waHref}
+        class="btn btn-accent-cta btn-lg text-primary fw-bold rounded-1 reveal d-inline-flex align-items-center gap-2"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Booking via WhatsApp"
+      >
+        <i class="bi bi-whatsapp" aria-hidden="true"></i>
+        Booking Sekarang
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Fallback JS mati -->
+<noscript><style>#layanan .reveal { opacity: 1 !important; }</style></noscript>
+
+<style>
+  /* Hook GSAP — scoped, custom.scss tidak disentuh */
+  .reveal { opacity: 0; }
+
+  /* Label: letter-spacing renggang, warna accent via var */
+  .services-label {
+    color: var(--bs-accent-cta) !important;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  /* Subjudul lebar dibatasi */
+  .services-sub { max-width: 36rem; }
+
+  /* Kartu: border accent-cta opasitas rendah (color-mix aman dari isu -rgb var) */
+  .service-card {
+    border: 1px solid color-mix(in srgb, var(--bs-accent-cta) 25%, transparent);
+    transition: border-color 0.25s ease;
+  }
+  .service-card:hover {
+    border-color: color-mix(in srgb, var(--bs-accent-cta) 60%, transparent);
+  }
+
+  /* Kartu unggulan: border penuh accent-cta + latar sedikit lebih terang */
+  .service-card--featured {
+    border: 2px solid var(--bs-accent-cta);
+    background-color: color-mix(in srgb, var(--bs-primary) 70%, var(--bs-secondary) 30%) !important;
+  }
+
+  /* Ikon dalam lingkaran border accent-cta */
+  .service-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-color: var(--bs-accent-cta) !important;
+    color: var(--bs-accent-cta);
+  }
+
+  /* Garis pemisah tipis accent-cta opasitas rendah */
+  .services-divider {
+    border-color: var(--bs-accent-cta);
+    opacity: 0.25;
+    margin-inline: 0;
+  }
+
+  /* Badge TERLARIS */
+  .service-badge {
+    background-color: var(--bs-accent-cta);
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+  /* Harga: font heading + ukuran besar + accent */
+  .service-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    line-height: 1;
+    color: var(--bs-accent-cta);
+  }
+
+  /* Di HP tombol Booking selebar layar */
+  @media (max-width: 575.98px) {
+    #layanan .btn-accent-cta { width: 100%; }
+  }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { initcounters } from "@/utils/counters.js";
+
+  initcounters();
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initServices = () => {
+    const els = gsap.utils.toArray("#layanan .reveal");
+    if (!els.length) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      gsap.set(els, { opacity: 1 });
+      return;
+    }
+
+    els.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          delay: Number(el.dataset.delay) || 0,
+          scrollTrigger: { trigger: el, start: "top 85%", once: true },
+        }
+      );
+    });
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initServices);
+  else initServices();
+</script>

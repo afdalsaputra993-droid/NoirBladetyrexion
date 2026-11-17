@@ -1,0 +1,223 @@
+---
+// Team.astro — Section "Tim Barber" Noir & Blade
+// Data barber di array frontmatter. Pesan WhatsApp dibuat per barber.
+import team1 from '../assets/images/team/team-1.jpg?url';
+import team2 from '../assets/images/team/team-1.jpg?url';
+import team3 from '../assets/images/team/team-1.jpg?url';
+
+const barbers = [
+  {
+    name: 'Rizky Pratama',
+    firstName: 'Rizky',
+    role: 'Head Barber',
+    years: 8,
+    quote: 'Potongan yang baik dimulai dari mendengarkan.',
+    skills: ['Skin Fade', 'Classic Cut'],
+    image: team1,
+    alt: 'Rizky Pratama, Head Barber, memegang gunting',
+  },
+  {
+    name: 'Dimas Arya',
+    firstName: 'Dimas',
+    role: 'Beard Specialist',
+    years: 6,
+    quote: 'Jenggot rapi adalah detail yang paling diperhatikan.',
+    skills: ['Beard Shape', 'Hot Towel Shave'],
+    image: team2,
+    alt: 'Dimas Arya, Beard Specialist, merapikan jenggot',
+  },
+  {
+    name: 'Bayu Santoso',
+    firstName: 'Bayu',
+    role: 'Color & Style Specialist',
+    years: 5,
+    quote: 'Warna yang tepat membuat gaya terasa hidup.',
+    skills: ['Hair Coloring', 'Textured Crop'],
+    image: team3,
+    alt: 'Bayu Santoso, Color & Style Specialist, menata rambut pelanggan',
+  },
+];
+
+// Stagger per kartu: 0, 0.1, 0.2
+const cardDelays = ['0', '0.1', '0.2'];
+---
+
+<section id="tim" class="bg-secondary py-5">
+  <div class="container">
+
+    <!-- Kepala section -->
+    <div class="text-center mb-5">
+      <p class="team-label reveal text-accent-cta mb-2">Tim Kami</p>
+      <h2 class="reveal text-light fw-bold display-6 mb-3">Kenalan dengan Barber Kami</h2>
+      <p class="reveal text-light opacity-75 mx-auto team-sub mb-0">
+        Tangan-tangan berpengalaman di balik setiap potongan. Pilih barber yang paling cocok dengan gayamu.
+      </p>
+    </div>
+
+    <!-- Grid kartu barber -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {barbers.map((barber, i) => (
+        <div class="col">
+          <article class="card h-100 bg-primary rounded-1 p-0 team-card reveal" data-delay={cardDelays[i]}>
+
+            <!-- Foto portrait + badge pengalaman -->
+            <div class="position-relative">
+              <div class="team-photo ratio overflow-hidden rounded-top-1">
+                <img
+                  src={barber.image}
+                  alt={barber.alt}
+                  width={600}
+                  height={750}
+                  loading="lazy"
+                  decoding="async"
+                  class="object-fit-cover"
+                />
+              </div>
+              <span class="team-badge position-absolute top-0 start-0 bg-accent-cta text-primary text-uppercase fw-bold small rounded-1 px-2 py-1 m-2">
+                {barber.years} Tahun
+              </span>
+            </div>
+
+            <!-- Body kartu -->
+            <div class="card-body d-flex flex-column p-4">
+              <h3 class="h5 text-light fw-bold mb-1">{barber.name}</h3>
+              <p class="team-role text-accent-cta mb-3">{barber.role}</p>
+
+              <blockquote class="team-quote text-light opacity-75 fst-italic mb-0">
+                &ldquo;{barber.quote}&rdquo;
+              </blockquote>
+
+              <hr class="team-divider" />
+
+              <!-- Pil spesialisasi -->
+              <ul class="list-unstyled d-flex flex-wrap gap-2 p-0 mb-3">
+                {barber.skills.map((skill) => (
+                  <li class="team-skill border border-accent-cta rounded-pill text-light">
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+
+              <!-- Tombol selalu di dasar kartu -->
+              <div class="mt-auto">
+                <a
+                  href="#"
+                  class="btn btn-outline-accent-cta btn-sm w-100 rounded-1 d-inline-flex align-items-center justify-content-center gap-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Booking dengan ${barber.firstName} via WhatsApp`}
+                >
+                  <i class="bi bi-whatsapp" aria-hidden="true"></i>
+                  Booking dengan {barber.firstName}
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+      ))}
+    </div>
+
+    <!-- Catatan bawah -->
+    <p class="reveal text-light opacity-75 small text-center mt-5 mb-0 mx-auto team-sub">
+      Didukung 3 barber profesional lainnya. Tidak ada preferensi? Kami pilihkan yang paling sesuai.
+    </p>
+  </div>
+</section>
+
+<!-- Fallback JS mati -->
+<noscript><style>#tim .reveal { opacity: 1 !important; }</style></noscript>
+
+<style>
+  /* Hook GSAP — scoped, custom.scss tidak disentuh */
+  .reveal { opacity: 0; }
+
+  .team-label {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  .team-sub { max-width: 36rem; }
+
+  /* Rasio foto: 4:5 desktop, 1:1 HP */
+  .team-photo { --bs-aspect-ratio: 125%; }
+  @media (max-width: 767.98px) {
+    .team-photo { --bs-aspect-ratio: 100%; }
+  }
+
+  /* Kartu: border accent opasitas rendah → lebih terang saat hover. Tanpa gerak. */
+  .team-card {
+    border: 1px solid color-mix(in srgb, var(--bs-accent-cta) 25%, transparent);
+    transition: border-color 0.25s ease;
+  }
+  .team-card:hover {
+    border-color: color-mix(in srgb, var(--bs-accent-cta) 60%, transparent);
+  }
+
+  .team-badge { letter-spacing: 0.14em; }
+
+  .team-role {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .team-quote {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .team-divider {
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--bs-accent-cta) 30%, transparent);
+    margin: 1rem 0;
+  }
+
+  .team-skill {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .team-card { transition: none; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initTeam = () => {
+    const els = gsap.utils.toArray('#tim .reveal');
+    if (!els.length) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      gsap.set(els, { opacity: 1 });
+      return;
+    }
+
+    els.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: Number(el.dataset.delay) || 0,
+          scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+        }
+      );
+    });
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initTeam);
+  else initTeam();
+  </script>

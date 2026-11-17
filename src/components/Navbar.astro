@@ -1,0 +1,202 @@
+---
+// Navbar.astro — Navbar "Noir & Blade" (Astro + Bootstrap 5 + GSAP)
+// Catatan: navbar TIDAK di-fade-in saat page load (sesuai aturan).
+// GSAP dipakai untuk: (a) hide/show scroll, (b) stagger item menu mobile.
+import {WA_NUMBER, WA_MESSAGE, waHref} from "@/utils/whatsApp.js";
+---
+
+<nav id="navbar-noir" class="navbar navbar-expand-lg fixed-top navbar-noir" aria-label="Navigasi utama">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#" data-scroll-top
+       aria-label="Noir & Blade — kembali ke atas">
+      <i class="bi bi-scissors text-accent-cta fs-4" aria-hidden="true"></i>
+      <span class="brand-text">NOIR &amp; BLADE</span>
+    </a>
+
+    <button class="navbar-toggler toggler-noir" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+            aria-controls="navbarMenu" aria-expanded="false" aria-label="Buka menu navigasi">
+      <i class="bi bi-list" aria-hidden="true"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMenu">
+      <ul class="navbar-nav mx-auto gap-3 gap-lg-4">
+        <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
+        <li class="nav-item"><a class="nav-link" href="#layanan">Layanan</a></li>
+        <li class="nav-item"><a class="nav-link" href="#galeri">Galeri</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tim">Tim</a></li>
+        <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+      </ul>
+
+      <a href={waHref} class="btn btn-cta" target="_blank" rel="noopener noreferrer"
+         aria-label="Booking via WhatsApp">
+        <i class="bi bi-whatsapp" aria-hidden="true"></i>
+        <span>Booking</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<style lang="scss">
+  /* Transform dikendalikan GSAP. CSS hanya untuk background & border. */
+  .navbar-noir {
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color .3s ease, border-color .3s ease;
+
+    &.scrolled  { background-color: var(--bs-primary); border-bottom-color: var(--bs-accent-cta); }
+    &.menu-open { background-color: var(--bs-primary); }
+  }
+
+  .brand-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    letter-spacing: .22em;
+    color: var(--bs-light);
+    white-space: nowrap;
+  }
+
+  .navbar-noir .nav-link {
+    font-size: .78rem;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--bs-light);
+
+    &:hover, &:focus-visible {
+      color: var(--bs-accent-cta);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-decoration-color: var(--bs-accent-cta);
+      text-underline-offset: 6px;
+    }
+  }
+
+  .btn-cta {
+    --bs-btn-color: var(--bs-light);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: var(--bs-accent-cta);
+    --bs-btn-hover-bg: var(--bs-accent-cta);
+    --bs-btn-hover-border-color: var(--bs-accent-cta);
+    --bs-btn-hover-color: var(--bs-primary);
+    --bs-btn-active-bg: var(--bs-accent-cta);
+    --bs-btn-active-border-color: var(--bs-accent-cta);
+    --bs-btn-active-color: var(--bs-primary);
+    --bs-btn-border-radius: 2px;
+
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .toggler-noir {
+    color: var(--bs-light);
+    border-color: var(--bs-light);
+    &:hover, &:focus-visible { color: var(--bs-accent-cta); border-color: var(--bs-accent-cta); }
+    &:focus { box-shadow: none; }
+  }
+
+  @media (max-width: 991.98px) {
+    .navbar-collapse { background-color: var(--bs-primary); padding: 1rem .5rem; margin-top: .75rem; }
+    .btn-cta { width: 100%; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  const initNavbar = () => {
+    const navbar = document.getElementById('navbar-noir');
+    if (!navbar) return;
+
+    const collapseEl = document.getElementById('navbarMenu');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const dur = reduceMotion ? 0 : 0.3;
+
+    let isHidden = false;
+    let lastY = 0;
+
+    // GSAP untuk hide/show navbar (perilaku Chrome). Inline transform, bukan CSS.
+    const setHidden = (next) => {
+      if (next === isHidden) return;
+      isHidden = next;
+      gsap.to(navbar, {
+        yPercent: next ? -100 : 0,
+        duration: dur,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    };
+
+    // 1) Transparan→solid + sembunyikan saat scroll ke bawah
+    const isMenuOpen = () => collapseEl?.classList.contains('show');
+    const onScroll = () => {
+      const y = window.scrollY;
+      navbar.classList.toggle('scrolled', y > 24);
+
+      const delta = y - lastY;
+      if (Math.abs(delta) > 5) {
+        // Jangan sembunyikan saat menu mobile terbuka atau di paling atas
+        setHidden(delta > 0 && y > 100 && !isMenuOpen());
+        lastY = y;
+      }
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // 2) Smooth scroll dengan offset tinggi navbar
+    const behavior = reduceMotion ? 'auto' : 'smooth';
+    const handleClick = (event) => {
+      const a = event.currentTarget;
+      const href = a.getAttribute('href');
+
+      if (href === '#' || a.hasAttribute('data-scroll-top')) {
+        event.preventDefault();
+        window.scrollTo({ top: 0, behavior });
+        return;
+      }
+      if (!href?.startsWith('#')) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+
+      event.preventDefault();
+      const top = target.getBoundingClientRect().top + window.scrollY - navbar.offsetHeight - 8;
+      window.scrollTo({ top, behavior });
+    };
+    navbar.querySelectorAll('a[href^="#"], a[data-scroll-top]')
+      .forEach(el => el.addEventListener('click', handleClick));
+
+    // 3) Menu mobile: solid, pastikan tampil, stagger item via GSAP
+    if (collapseEl) {
+      collapseEl.addEventListener('show.bs.collapse', () => {
+        navbar.classList.add('menu-open');
+        setHidden(false);
+
+        if (!reduceMotion) {
+          gsap.from(collapseEl.querySelectorAll('.nav-item, .btn-cta'), {
+            autoAlpha: 0,
+            y: -8,
+            duration: 0.25,
+            stagger: 0.04,
+            ease: 'power1.out',
+            overwrite: 'auto',
+          });
+        }
+      });
+      collapseEl.addEventListener('hide.bs.collapse', () => navbar.classList.remove('menu-open'));
+
+      // Tutup otomatis setelah klik link (hanya di HP)
+      collapseEl.querySelectorAll('.nav-link, .btn-cta').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 992 && collapseEl.classList.contains('show')) {
+            window.bootstrap?.Collapse?.getOrCreateInstance(collapseEl)?.hide();
+          }
+        });
+      });
+    }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNavbar);
+  else initNavbar();
+  </script>

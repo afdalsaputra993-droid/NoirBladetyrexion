@@ -1,0 +1,212 @@
+---
+// Testimonials.astro — Section "Testimoni" Noir & Blade
+// Ulasan statis, bintang dari nilai rating, fade-in GSAP sekali.
+
+const SCORE = '4,9';
+const REVIEW_COUNT = '500+';
+
+const reviews = [
+  { name: 'Andi Wijaya', initials: 'AW', profile: 'Karyawan swasta', service: 'Signature Haircut', rating: 5, text: 'Potongannya rapi dan sesuai bentuk wajah. Suasananya tenang, serasa jeda dari kesibukan.' },
+  { name: 'Reza Mahendra', initials: 'RM', profile: 'Fotografer', service: 'Paket Groom', rating: 5, text: 'Paket Groom-nya worth it. Hot towel dan pijat kepalanya bikin segar. Pasti balik lagi.' },
+  { name: 'Fajar Nugroho', initials: 'FN', profile: 'Mahasiswa', service: 'Beard Trim & Shape', rating: 5, text: 'Jenggot saya tidak pernah serapi ini. Barbernya teliti dan mau mendengar permintaan saya.' },
+];
+
+// Stagger per kartu: 0, 0.1, 0.2
+const cardDelays = ['0', '0.1', '0.2'];
+---
+
+<section id="testimoni" class="bg-primary py-5">
+  <div class="container">
+
+    <!-- Kepala section -->
+    <div class="text-center mb-5">
+      <p class="testimonial-label reveal text-accent-cta mb-2">Testimoni</p>
+      <h2 class="reveal text-light fw-bold display-6 mb-3">Kata Mereka yang Sudah Mencoba</h2>
+      <p class="reveal text-light opacity-75 mx-auto testimonial-sub mb-4">
+        Ulasan jujur dari pelanggan yang kembali lagi.
+      </p>
+    </div>
+
+    <!-- Ringkasan rating: bintang (dekoratif) + angka + keterangan + teks sr-only -->
+    <div class="reveal d-flex flex-wrap justify-content-center align-items-center gap-3 mb-5">
+      <div class="d-flex gap-1" aria-hidden="true">
+        {Array.from({ length: 5 }).map(() => (
+          <i class="bi bi-star-fill text-accent-cta fs-5"></i>
+        ))}
+      </div>
+      <div class="d-flex align-items-baseline gap-2" aria-hidden="true">
+        <span class="testimonial-score text-light fw-bold">{SCORE}</span>
+        <span class="text-light opacity-75 small">dari {REVIEW_COUNT} ulasan</span>
+      </div>
+      <span class="visually-hidden">Rating {SCORE} dari 5 berdasarkan {REVIEW_COUNT} lebih ulasan</span>
+    </div>
+
+    <!-- Grid kartu ulasan -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {reviews.map((review, i) => (
+        <div class="col">
+          <figure
+            class="card h-100 bg-secondary p-4 mb-0 rounded-1 testimonial-card reveal"
+            data-delay={cardDelays[i]}
+          >
+            <!-- Ikon kutip dekoratif -->
+            <i class="bi bi-quote fs-1 lh-1 text-accent-cta mb-2" aria-hidden="true"></i>
+
+            <!-- Bintang sesuai rating + teks sr-only -->
+            <div class="d-flex gap-1 mb-3" aria-hidden="true">
+              {Array.from({ length: review.rating }).map(() => (
+                <i class="bi bi-star-fill text-accent-cta fs-5"></i>
+              ))}
+            </div>
+            <span class="visually-hidden">Rating {review.rating} dari 5</span>
+
+            <!-- Teks ulasan -->
+            <blockquote class="testimonial-text text-light mb-3">
+              {review.text}
+            </blockquote>
+
+            <hr class="testimonial-divider" />
+
+            <!-- Keterangan: nama, profil, lalu label layanan (mt-auto = selalu di dasar kartu) -->
+            <figcaption class="mt-auto">
+              <div class="d-flex align-items-center gap-3">
+                <span class="testimonial-avatar rounded-circle border border-accent-cta d-inline-flex align-items-center justify-content-center text-accent-cta">
+                  {review.initials}
+                </span>
+                <div>
+                  <cite class="testimonial-name text-light d-block">{review.name}</cite>
+                  <span class="testimonial-profile text-light opacity-75">{review.profile}</span>
+                </div>
+              </div>
+
+              <div class="testimonial-service pt-3 text-accent-cta">
+                <i class="bi bi-scissors me-1" aria-hidden="true"></i>
+                <span>{review.service}</span>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      ))}
+    </div>
+
+    <!-- Catatan bawah -->
+    <p class="reveal text-light opacity-75 small text-center mt-5 mb-0">
+      Punya pengalaman di Noir &amp; Blade? Ceritakan di Google Maps.
+    </p>
+  </div>
+</section>
+
+<!-- Fallback JS mati -->
+<noscript><style>#testimoni .reveal { opacity: 1 !important; }</style></noscript>
+
+<style>
+  /* Hook GSAP — scoped, custom.scss tidak disentuh */
+  .reveal { opacity: 0; }
+
+  .testimonial-label {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  .testimonial-sub { max-width: 34rem; }
+
+  /* Angka rating: font heading, besar */
+  .testimonial-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  /* Kartu: border accent opasitas rendah → lebih terang saat hover. Tanpa gerak. */
+  .testimonial-card {
+    border: 1px solid color-mix(in srgb, var(--bs-accent-cta) 25%, transparent);
+    transition: border-color 0.25s ease;
+  }
+  .testimonial-card:hover {
+    border-color: color-mix(in srgb, var(--bs-accent-cta) 60%, transparent);
+  }
+
+  /* Reset margin bawaan blockquote + ukuran nyaman dibaca */
+  .testimonial-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .testimonial-divider {
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--bs-accent-cta) 30%, transparent);
+    margin: 1rem 0;
+    opacity: 1;
+  }
+
+  /* Avatar inisial: 48px lingkaran, serif emas */
+  .testimonial-avatar {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Nama: netralkan italic bawaan <cite> */
+  .testimonial-name {
+    font-family: 'Playfair Display', serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  .testimonial-profile { font-size: 0.75rem; line-height: 1.2; }
+
+  .testimonial-service {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .testimonial-card { transition: none; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initTestimonials = () => {
+    const els = gsap.utils.toArray('#testimoni .reveal');
+    if (!els.length) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      gsap.set(els, { opacity: 1 });
+      return;
+    }
+
+    // Fade-in sekali, tanpa gerak posisi/scale/parallax.
+    els.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: Number(el.dataset.delay) || 0,
+          scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+        }
+      );
+    });
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initTestimonials);
+  else initTestimonials();
+</script>

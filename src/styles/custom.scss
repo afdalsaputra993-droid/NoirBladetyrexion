@@ -1,0 +1,44 @@
+// 1. Fungsi Bootstrap (wajib paling awal)
+@import "bootstrap/scss/functions";
+
+// 2. Warna dan variabel milikmu
+$primary: #28301C;
+$secondary: #323D25;
+$light: #D2CF9A;
+
+$body-bg: $primary;
+$body-color: $light;
+$font-family-base: "Inter", sans-serif;
+$headings-font-family: "Playfair Display", serif;
+
+// 3. Variabel bawaan Bootstrap
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+
+// 4. Tambah warna baru tanpa menghapus warna bawaan
+$custom-colors: (
+  "accent-cta": #9A7E3B
+);
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+// 4b. Buat ulang peta turunan agar accent-cta ikut (versi RGB + utilitas)
+$theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
+$utilities-colors: $theme-colors-rgb;
+$utilities-text: map-merge(
+  $utilities-colors,
+  ("black": to-rgb($black), "white": to-rgb($white), "body": to-rgb($body-color))
+);
+$utilities-bg: map-merge(
+  $utilities-colors,
+  ("black": to-rgb($black), "white": to-rgb($white), "body": to-rgb($body-bg))
+);
+$utilities-border: map-merge(
+  $utilities-colors,
+  ("white": to-rgb($white))
+);
+
+// 5. Sisa Bootstrap
+@import "bootstrap/scss/bootstrap";
+
+// 6. Style tambahanmu
+.reveal { opacity: 0; }

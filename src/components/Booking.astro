@@ -1,0 +1,145 @@
+---
+// Booking.astro — Section CTA "Booking" Noir & Blade
+// Ajakan bertindak, tanpa formulir. Fade-in GSAP sekali per elemen.
+
+import {WA_NUMBER, WA_MESSAGE, waHref} from "@/utils/whatsApp.js";
+
+// Tiga poin keunggulan
+const perks = [
+  { icon: 'bi-clock', text: 'Buka setiap hari, 10.00 - 21.00' },
+  { icon: 'bi-chat-dots', text: 'Konfirmasi cepat lewat WhatsApp' },
+  { icon: 'bi-calendar-check', text: 'Bisa reschedule tanpa biaya' },
+];
+
+// Delay bertahap untuk stagger
+const perkDelays = ['0.1', '0.2', '0.3'];
+---
+
+<section id="booking" class="bg-secondary py-6 booking-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 text-center">
+
+        <!-- Label kecil -->
+        <p class="booking-label reveal text-accent-cta mb-2">Booking</p>
+
+        <!-- Judul -->
+        <h2 class="reveal text-light fw-bold display-5 mb-3">Siap Tampil Beda?</h2>
+
+        <!-- Paragraf -->
+        <p class="reveal text-light opacity-75 mx-auto booking-sub mb-5">
+          Pilih waktu yang cocok, lalu kirim pesan lewat WhatsApp. Tim kami akan mengonfirmasi jadwalmu secepatnya.
+        </p>
+
+        <!-- Tiga poin keunggulan -->
+        <ul class="list-unstyled row row-cols-1 row-cols-md-3 justify-content-center g-3 g-md-4 mb-5">
+          {perks.map((perk, i) => (
+            <li class="col reveal" data-delay={perkDelays[i]}>
+              <i class:list={['bi', perk.icon, 'booking-perk-icon', 'text-accent-cta', 'd-block', 'mx-auto', 'mb-2']} aria-hidden="true"></i>
+              <span class="text-light small d-block">{perk.text}</span>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Tombol CTA utama -->
+        <a
+          href={waHref}
+          class="btn btn-accent-cta btn-lg text-primary fw-bold rounded-1 booking-btn reveal d-inline-flex align-items-center gap-2"
+          data-delay="0.3"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Booking lewat WhatsApp (membuka tab baru)"
+        >
+          <i class="bi bi-whatsapp" aria-hidden="true"></i>
+          Booking Sekarang
+        </a>
+
+        <!-- Catatan kecil -->
+        <p class="reveal text-light opacity-75 small mt-3 mb-0" data-delay="0.3">
+          Tanpa antre lama. Datang sesuai jadwal yang sudah dikonfirmasi.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Fallback JS mati -->
+<noscript><style>#booking .reveal { opacity: 1 !important; }</style></noscript>
+
+<style>
+  /* Hook GSAP — scoped, custom.scss tidak disentuh */
+  .reveal { opacity: 0; }
+
+  /* Garis tipis atas & bawah sebagai pembatas section */
+  .booking-section {
+    border-top: 1px solid color-mix(in srgb, var(--bs-accent-cta) 25%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--bs-accent-cta) 25%, transparent);
+  }
+
+  /* Padding vertikal ekstra lega di desktop */
+  @media (min-width: 768px) {
+    .booking-section { padding-block: 5rem; }
+  }
+
+  .booking-label {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  .booking-sub { max-width: 34rem; }
+
+  /* Ikon poin: besar, accent, center */
+  .booking-perk-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  /* Tombol utama: padding horizontal lebar, tanpa efek gerak */
+  .booking-btn {
+    padding-inline: 2rem;
+  }
+
+  /* Tombol selebar layar di HP */
+  @media (max-width: 575.98px) {
+    .booking-btn { width: 100%; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initBooking = () => {
+    const els = gsap.utils.toArray('#booking .reveal');
+    if (!els.length) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      gsap.set(els, { opacity: 1 });
+      return;
+    }
+
+    // Fade-in sekali, tanpa gerak posisi/scale/parallax.
+    els.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: Number(el.dataset.delay) || 0,
+          scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+        }
+      );
+    });
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initBooking);
+  else initBooking();
+</script>

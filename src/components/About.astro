@@ -1,0 +1,166 @@
+---
+// About.astro — Section "Tentang" Noir & Blade
+// Foto + teks dua kolom + baris angka. Animasi GSAP fade-in sekali saat masuk layar.
+---
+
+<section id="tentang" class="bg-primary py-5 overflow-hidden">
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <!-- Kolom foto (kiri desktop, atas HP) -->
+      <div class="col-lg-5 order-1 reveal">
+        <div class="about-photo position-relative">
+          <div class="about-photo-frame position-absolute border border-accent-cta rounded-4" aria-hidden="true"></div>
+
+          <div class="about-photo-media ratio overflow-hidden rounded-4 shadow">
+            <img
+              src="/images/alatcukur.png"
+              alt="Barber Noir & Blade merapikan potongan rambut dengan gunting dan sisir"
+              width={640}
+              height={640}
+              loading="lazy"
+              decoding="async"
+              class="object-fit-cover"
+            />
+          </div>
+
+          <span class="about-badge position-absolute top-0 start-0 bg-accent-cta text-primary text-uppercase fw-bold small rounded-1 px-3 py-2">
+            Sejak Sekarang
+          </span>
+        </div>
+      </div>
+
+      <!-- Kolom teks (kanan desktop, bawah HP) -->
+      <div class="col-lg-7 order-2">
+        <p class="about-label reveal text-accent-cta text-uppercase small fw-semibold mb-2">
+          Tentang Kami
+        </p>
+
+        <h2 class="reveal fw-bold text-light display-6 mb-4">
+          Lebih dari Sekadar Potong Rambut
+        </h2>
+
+        <p class="reveal text-light mb-3">
+          Noir &amp; Blade lahir dari keyakinan sederhana: setiap pria layak mendapat perawatan yang membuatnya tampil dan merasa terbaik. Kami menghadirkan barbershop dengan sentuhan klasik dan standar modern.
+        </p>
+
+        <p class="reveal text-light mb-4">
+          Di sini, setiap potongan dikerjakan dengan presisi oleh barber berpengalaman, ditemani kopi hangat, musik tenang, dan ruang yang nyaman untuk beristirahat sejenak dari rutinitas.
+        </p>
+
+        <ul class="list-unstyled mb-4">
+          <li class="reveal d-flex align-items-start gap-3 mb-3" data-delay="0">
+            <i class="bi bi-scissors text-accent-cta fs-5" aria-hidden="true"></i>
+            <span class="text-light">Barber berpengalaman dan tersertifikasi</span>
+          </li>
+          <li class="reveal d-flex align-items-start gap-3 mb-3" data-delay="0.1">
+            <i class="bi bi-droplet text-accent-cta fs-5" aria-hidden="true"></i>
+            <span class="text-light">Produk perawatan premium</span>
+          </li>
+          <li class="reveal d-flex align-items-start gap-3 mb-3" data-delay="0.2">
+            <i class="bi bi-shield-check text-accent-cta fs-5" aria-hidden="true"></i>
+            <span class="text-light">Alat steril untuk setiap pelanggan</span>
+          </li>
+        </ul>
+
+        <a href="#layanan"
+           class="about-link reveal d-inline-flex align-items-center text-accent-cta text-decoration-none fw-semibold">
+          Lihat Layanan Kami
+          <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Baris angka: 3 kolom sebaris, pemisah vertikal accent -->
+    <div class="row row-cols-3 about-stats border-top border-accent-cta mt-5 pt-4">
+      <div class="text-center reveal" data-delay="0">
+        <h3 class="counter about-stat-num fw-bold text-accent-cta mb-1" data-target="6">0</h3>
+        <p class="text-light small mb-0">Barber profesional</p>
+      </div>
+      <div class="text-center reveal" data-delay="0.1">
+        <h3 class="counter about-stat-num fw-bold text-accent-cta mb-1" data-target="7">0</h3>
+        <p class="text-light small mb-0">Hari buka setiap minggu</p>
+      </div>
+      <div class="text-center reveal" data-delay="0.2">
+        <h3 class="counter about-stat-num fw-bold text-accent-cta mb-1" data-target="100" data-suffix="%">100%</h3>
+        <p class="text-light small mb-0">Alat steril</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Fallback: jika JS mati, semua konten tetap tampil -->
+<noscript><style>#tentang .reveal { opacity: 1 !important; }</style></noscript>
+
+<style>
+  /* Hook GSAP — scoped otomatis ke komponen ini, tidak perlu di custom.scss */
+  .reveal { opacity: 0; }
+
+  .about-label { letter-spacing: 0.18em; }
+
+  /* Ruang untuk frame offset kanan-bawah */
+  .about-photo { padding: 0 1.125rem 1.125rem 0; }
+  .about-photo-frame {
+    top: 1.125rem;
+    left: 1.125rem;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  /* Rasio 4:5 desktop, 1:1 HP */
+  .about-photo-media { --bs-aspect-ratio: 125%; }
+  @media (max-width: 991.98px) {
+    .about-photo-media { --bs-aspect-ratio: 100%; }
+  }
+
+  .about-badge { letter-spacing: 0.14em; }
+
+  /* Pemisah vertikal antar kolom angka */
+  .about-stats > *:not(:last-child) {
+    border-right: 1px solid var(--bs-accent-cta);
+  }
+
+  /* Angka responsif, tetap sebaris di HP */
+  .about-stat-num { font-size: 2rem; line-height: 1.1; }
+  @media (min-width: 768px) { .about-stat-num { font-size: 2.75rem; } }
+
+  .about-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { initcounters } from "@/utils/counters.js";
+
+  initcounters();
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initAbout = () => {
+    const els = gsap.utils.toArray("#tentang .reveal");
+    if (!els.length) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      gsap.set(els, { opacity: 1 });
+      return;
+    }
+
+    els.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          delay: Number(el.dataset.delay) || 0,
+          scrollTrigger: { trigger: el, start: "top 85%", once: true },
+        }
+      );
+    });
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initAbout);
+  else initAbout();
+  </script>

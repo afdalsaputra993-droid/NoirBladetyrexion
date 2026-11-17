@@ -1,0 +1,195 @@
+---
+// Contact.astro — Section "Lokasi & Kontak" Noir & Blade
+// 4 blok info + 2 tombol + peta embed. Fade-in GSAP sekali per elemen.
+
+// === Data kontak — mudah diganti ===
+import {WA_NUMBER, WA_MESSAGE, waHref} from "@/utils/whatsApp.js";
+const ADDRESS = 'Jl. Contoh No. 12, Jakarta Selatan 12345';
+const HOURS = 'Setiap hari, 10.00 - 21.00';
+const PHONE_DISPLAY = '0838-3085-6078';
+const PHONE_LINK = '+6283830856078';
+const INSTAGRAM_HANDLE = '@noirandblade';
+const INSTAGRAM_URL = 'https://instagram.com/noirandblade';
+
+// Placeholder embed tanpa API key. Ganti dengan embed resmi alamat asli bila perlu.
+const MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
+const MAPS_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed`;
+
+// Empat blok info: ikon, label, isi, tautan opsional
+const contactBlocks = [
+  { icon: 'bi-geo-alt', label: 'Alamat', content: ADDRESS, isAddress: true },
+  { icon: 'bi-clock', label: 'Jam Operasional', content: HOURS },
+  { icon: 'bi-telephone', label: 'Telepon', content: PHONE_DISPLAY, href: `tel:${PHONE_LINK}` },
+  { icon: 'bi-instagram', label: 'Instagram', content: INSTAGRAM_HANDLE, href: INSTAGRAM_URL, external: true },
+];
+---
+
+<section id="kontak" class="bg-primary py-5 overflow-hidden">
+  <div class="container">
+
+    <!-- Kepala section -->
+    <div class="text-center mb-5">
+      <p class="contact-label reveal text-accent-cta mb-2">Lokasi &amp; Kontak</p>
+      <h2 class="reveal text-light fw-bold display-6 mb-3">Mampir ke Noir &amp; Blade</h2>
+      <p class="reveal text-light opacity-75 mx-auto contact-sub mb-0">
+        Temukan kami di jantung kota. Parkir mudah dan dekat transportasi umum.
+      </p>
+    </div>
+
+    <div class="row align-items-center g-5">
+
+      <!-- Kolom info (kiri desktop, atas HP) -->
+      <div class="col-lg-5">
+
+        <ul class="list-unstyled mb-4" role="list">
+          {contactBlocks.map((block, i) => (
+            <li class="contact-block reveal py-3" data-delay={String(i * 0.1)}>
+              <div class="d-flex align-items-start gap-3">
+                <i
+                  class:list={['bi', block.icon, 'fs-3', 'text-accent-cta', 'lh-1', 'flex-shrink-0']}
+                  aria-hidden="true"
+                ></i>
+                <div class="flex-grow-1">
+                  <div class="contact-block-label text-accent-cta mb-1">{block.label}</div>
+                  {block.href ? (
+                    <a
+                      href={block.href}
+                      class="contact-link text-light text-decoration-none"
+                      target={block.external ? '_blank' : undefined}
+                      rel={block.external ? 'noopener noreferrer' : undefined}
+                    >
+                      {block.content}
+                    </a>
+                  ) : block.isAddress ? (
+                    <address class="text-light mb-0">{block.content}</address>
+                  ) : (
+                    <span class="text-light">{block.content}</span>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Dua tombol: bertumpuk di HP, berdampingan di sm+ -->
+        <div class="reveal d-grid gap-3 d-sm-flex">
+          <a
+            href={MAPS_DIRECTIONS_URL}
+            class="btn btn-accent-cta btn-lg text-primary fw-bold rounded-1 d-inline-flex align-items-center justify-content-center gap-2"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Petunjuk arah ke Noir & Blade lewat Google Maps (membuka tab baru)"
+          >
+            <i class="bi bi-sign-turn-right" aria-hidden="true"></i>
+            Petunjuk Arah
+          </a>
+          <a
+            href={waHref}
+            class="btn btn-outline-accent-cta btn-lg rounded-1 d-inline-flex align-items-center justify-content-center gap-2"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat WhatsApp Noir & Blade (membuka tab baru)"
+          >
+            <i class="bi bi-whatsapp" aria-hidden="true"></i>
+            Chat WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <!-- Kolom peta (kanan desktop, bawah HP). Reveal di wadah, bukan iframe. -->
+      <div class="col-lg-7">
+        <div class="contact-map ratio border border-accent-cta rounded-1 overflow-hidden reveal">
+          <iframe
+            src={MAPS_EMBED_URL}
+            title="Peta lokasi Noir & Blade"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+            class="border-0"
+          ></iframe>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Fallback JS mati -->
+<noscript><style>#kontak .reveal { opacity: 1 !important; }</style></noscript>
+
+<style>
+  /* Hook GSAP — scoped, custom.scss tidak disentuh */
+  .reveal { opacity: 0; }
+
+  .contact-label {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  .contact-sub { max-width: 34rem; }
+
+  /* Garis pemisah tipis antar blok info (hilang di blok terakhir) */
+  .contact-block:not(:last-child) {
+    border-bottom: 1px solid color-mix(in srgb, var(--bs-accent-cta) 25%, transparent);
+  }
+
+  .contact-block-label {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  /* Hover tautan info: ganti warna ke accent, tanpa gerak.
+     !important menimpa .text-light bawaan Bootstrap. */
+  .contact-link:hover,
+  .contact-link:focus-visible {
+    color: var(--bs-accent-cta) !important;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Rasio peta: 4:3 (default .ratio), 1:1 di layar < lg */
+  .contact-map { --bs-aspect-ratio: 75%; }
+  @media (max-width: 991.98px) {
+    .contact-map { --bs-aspect-ratio: 100%; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initContact = () => {
+    const els = gsap.utils.toArray('#kontak .reveal');
+    if (!els.length) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      gsap.set(els, { opacity: 1 });
+      return;
+    }
+
+    // Fade-in sekali, tanpa gerak posisi/scale/parallax.
+    els.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: Number(el.dataset.delay) || 0,
+          scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+        }
+      );
+    });
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initContact);
+  else initContact();
+</script>
